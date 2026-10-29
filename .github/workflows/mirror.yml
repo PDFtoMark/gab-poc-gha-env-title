@@ -23,12 +23,13 @@ jobs:
             echo "SEND_SLACK=false" >> $GITHUB_ENV
           fi
 
-      - name: Send Slack Notification stand-in node action with secret input
+      - name: Send Slack Notification
         if: env.SEND_SLACK == 'true'
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d # v4.0.0
         with:
           webhook: ${{ secrets.SLACK_NOTIFIER_WEBHOOK_URL }}
-          script: |
-            console.log("LINK_ENV=" + JSON.stringify(process.env.LINK));
-            console.log("POC_INJECTED_VAR=" + (process.env.POC_INJECTED_VAR || 'ABSENT'));
-            console.log("NODE_OPTIONS=" + (process.env.NODE_OPTIONS || 'ABSENT'));
+          webhook-type: webhook-trigger
+          payload: |
+            {
+              "text": ":pocket-casts::android: *High Priority Alert!*\n\n*Type:* ${{ env.TYPE }}\n*Link:* ${{ env.LINK }}\n*Created By:* ${{ env.AUTHOR }}\n*Number:* ${{ env.NUMBER }}"
+            }
